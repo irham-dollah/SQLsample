@@ -11,26 +11,24 @@ namespace SQLServerSample
     {
         static void Main(string[] args)
         {
+            String sql;
+            StringBuilder sb = new StringBuilder();
             try
             {
-               // SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
-               // builder.DataSource = "localhost";
-               // builder.UserID = "admin";
-                //builder.Password = "";
-                //builder.InitialCatalog = "master";
-                //builder.Add("server", "localhost");
-                //builder.Add("user", "sa");
-                //builder.Add("password", "pa$$word");
-                //builder.Add("data source", "sampleDB");
+                SqlConnectionStringBuilder builder = new SqlConnectionStringBuilder();
+                builder.DataSource = "localhost";
+                builder.UserID = "sa";
+                builder.Password = "pa$$word";
 
                 Console.Write("Connecting to SQL server . . .");
-                using(SqlConnection con = new SqlConnection(@"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = C:\Users\Am\Documents\sample.mdf; Integrated Security = True; Connect Timeout = 30"))
+                using (SqlConnection con = new SqlConnection(builder.ConnectionString))
+//                using (SqlConnection con = new SqlConnection(@"Data Source = (LocalDB)\MSSQLLocalDB; AttachDbFilename = C:\Users\Am\Documents\sample.mdf; Integrated Security = True; Connect Timeout = 30"))//localhost
                 {
                     con.Open();
                     Console.WriteLine("Connected");
 
                     Console.Write("\nDropping and creating database 'SampleDB' ... ");
-                    String sql = "DROP DATABASE IF EXISTS [sampleDB]; CREATE DATABASE [sampleDB]";
+                    sql = "DROP DATABASE IF EXISTS [sampleDB]; CREATE DATABASE [sampleDB]";
                     using (SqlCommand com = new SqlCommand(sql, con))
                     {
                         com.ExecuteNonQuery();
@@ -38,24 +36,14 @@ namespace SQLServerSample
                     }
 
                     Console.WriteLine("\nCreating table . . .");
-                    StringBuilder sb = new StringBuilder();
-                    sb.Append("USE SampleDB;");
-                    sb.Append("CREATE TABLE Employees(");
-                    sb.Append("id INT IDENTITY(1,1) NOT NULL PRIMARY KEY, ");
-                    sb.Append("Name NVARCHAR(50), ");
-                    sb.Append("Location NVARCHAR(50));");
-                    Console.Write("... ");
-                    sb.Append("INSERT INTO Employees(Name,Location) VALUES ");
-                    sb.Append("(N'Irham',N'Damansara'),");
-                    sb.Append("(N'Abu',N'Gombak');");
-                    sql = sb.ToString();
+                    starting();
+                    
                     using (SqlCommand com = new SqlCommand(sql, con))
                     {
                         com.ExecuteNonQuery();
                         Console.WriteLine("Table Created");
                     }
-                    Console.WriteLine("\nPress any key to continue.");
-                    Console.ReadKey();
+                    ending();
 
                     int choice=0;
                     do
@@ -94,9 +82,7 @@ namespace SQLServerSample
                             int rowsAffected = command.ExecuteNonQuery();
                             Console.WriteLine(rowsAffected + " row(s) inserted");
                         }
-                        Console.WriteLine("Done.");
-                        Console.WriteLine("\nPress any key to continue.");
-                        Console.ReadKey();
+                        ending();
                     }
                     void update()
                     {
@@ -116,9 +102,7 @@ namespace SQLServerSample
                             int rowsAffected = command.ExecuteNonQuery();
                             Console.WriteLine(rowsAffected + " row(s) updated");
                         }
-                        Console.WriteLine("Done.");
-                        Console.WriteLine("\nPress any key to continue.");
-                        Console.ReadKey();
+                        ending();
                     }
                     void delete()
                     {
@@ -135,10 +119,7 @@ namespace SQLServerSample
                             int rowsAffected = command.ExecuteNonQuery();
                             Console.WriteLine(rowsAffected + " row(s) deleted");
                         }
-                        Console.WriteLine("Done.");
-                        Console.WriteLine("\nPress any key to continue.");
-                        Console.ReadKey();
-
+                        ending();
                     }
                     void display()
                     {
@@ -156,7 +137,24 @@ namespace SQLServerSample
                                 }
                             }
                         }
-                        Console.WriteLine("Done");
+                        ending();
+                    }
+                    void starting()
+                    {
+                        sb.Append("USE SampleDB;");
+                        sb.Append("CREATE TABLE Employees(");
+                        sb.Append("id INT IDENTITY(1,1) NOT NULL PRIMARY KEY, ");
+                        sb.Append("Name NVARCHAR(50), ");
+                        sb.Append("Location NVARCHAR(50));");
+                        Console.Write("... ");
+                        sb.Append("INSERT INTO Employees(Name,Location) VALUES ");
+                        sb.Append("(N'Irham',N'Damansara'),");
+                        sb.Append("(N'Abu',N'Gombak');");
+                        sql = sb.ToString();
+                    }
+                    void ending()
+                    {
+                        Console.WriteLine("Done.");
                         Console.WriteLine("\nPress any key to continue.");
                         Console.ReadKey();
                     }
